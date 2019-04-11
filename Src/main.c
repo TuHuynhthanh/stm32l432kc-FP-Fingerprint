@@ -126,8 +126,9 @@ int main(void)
   MX_DMA_Init();
   MX_TIM15_Init();
   MX_USART1_UART_Init();
-  if(HAL_GPIO_ReadPin(GPIOB,3)){
-	  configFlag=0;
+  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,1);
+  if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)){
+	  configFlag=0; // =1, hid
 	  MX_USB_DEVICE_Init();
 
   }
@@ -151,7 +152,11 @@ int main(void)
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
-
+	 /* uint8_t st[20];
+	  sprintf(st,"PB3=%d",HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4));
+	  HAL_UART_Transmit(&huart2,st,strlen(st),1000);
+	  HAL_Delay(500);
+*/
 
   }
   /* USER CODE END 3 */
@@ -346,16 +351,17 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4|GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PB3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB4 PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5;
+  GPIO_InitStruct.Pin = GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;

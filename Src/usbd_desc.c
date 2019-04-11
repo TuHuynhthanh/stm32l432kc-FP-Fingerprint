@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file           : usbd_desc.c
-  * @version        : v2.0_Cube
+  * @version        : v1.0_Cube
   * @brief          : This file implements the USB device descriptors.
   ******************************************************************************
   * This notice applies to any and all portions of this file
@@ -91,11 +91,11 @@
   * @{
   */
 
-#define USBD_VID     1155
+#define USBD_VID     3690
 #define USBD_LANGID_STRING     1033
-#define USBD_MANUFACTURER_STRING     "STMicroelectronics"
-#define USBD_PID_FS     22315
-#define USBD_PRODUCT_STRING_FS     "STM32 Human interface"
+#define USBD_MANUFACTURER_STRING     "HTTU"
+#define USBD_PID_FS     773
+#define USBD_PRODUCT_STRING_FS     "FingerID Photocopy"
 #define USBD_SERIALNUMBER_STRING_FS     "00000000001A"
 #define USBD_CONFIGURATION_STRING_FS     "HID Config"
 #define USBD_INTERFACE_STRING_FS     "HID Interface"
@@ -184,9 +184,9 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
                                              in order to support LPM L1 suspend
                                              resume test of USBCV3.0*/
 #else
-  0x00,                       /*bcdUSB */
+  0x10,                       /*bcdUSB */
 #endif /* (USBD_LPM_ENABLED == 1) */
-  0x02,
+  0x01,							//httu edit//
   0x00,                       /*bDeviceClass*/
   0x00,                       /*bDeviceSubClass*/
   0x00,                       /*bDeviceProtocol*/
@@ -196,7 +196,7 @@ __ALIGN_BEGIN uint8_t USBD_FS_DeviceDesc[USB_LEN_DEV_DESC] __ALIGN_END =
   LOBYTE(USBD_PID_FS),        /*idProduct*/
   HIBYTE(USBD_PID_FS),        /*idProduct*/
   0x00,                       /*bcdDevice rel. 2.00*/
-  0x02,
+  0x01,
   USBD_IDX_MFC_STR,           /*Index of manufacturer  string*/
   USBD_IDX_PRODUCT_STR,       /*Index of product string*/
   USBD_IDX_SERIAL_STR,        /*Index of serial number string*/
