@@ -1,0 +1,8 @@
+VCPusbd_desc.c:273:11:USBD_VCP_FS_DeviceDescriptor	0	static
+VCPusbd_desc.c:285:11:USBD_VCP_FS_LangIDStrDescriptor	0	static
+VCPusbd_desc.c:386:11:USBD_VCP_FS_USR_BOSDescriptor	0	static
+VCPusbd_desc.c:316:11:USBD_VCP_FS_ManufacturerStrDescriptor	8	static
+VCPusbd_desc.c:297:11:USBD_VCP_FS_ProductStrDescriptor	8	static
+VCPusbd_desc.c:328:11:USBD_VCP_FS_SerialStrDescriptor	8	static
+VCPusbd_desc.c:347:11:USBD_VCP_FS_ConfigStrDescriptor	8	static
+VCPusbd_desc.c:366:11:USBD_VCP_FS_InterfaceStrDescriptor	8	static
