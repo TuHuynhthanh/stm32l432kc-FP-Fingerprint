@@ -70,6 +70,7 @@ DMA_HandleTypeDef hdma_usart1_tx;
 /* Private variables ---------------------------------------------------------*/
 uint8_t rxBuff[1024]={0};volatile int rxIndex=0;
 uint32_t BuffLength;
+int8_t configFlag;//select HID =0or VCP=1
 uint32_t UserTxBufPtrIn = 0;/* Increment this pointer or roll it back to
                                start address when data are received over USART */
 uint32_t UserTxBufPtrOut = 0; /* Increment this pointer or roll it back to
@@ -125,8 +126,18 @@ int main(void)
   MX_DMA_Init();
   MX_TIM15_Init();
   MX_USART1_UART_Init();
+  if(HAL_GPIO_ReadPin(GPIOB,3)){
+	  configFlag=0;
+	  MX_USB_DEVICE_Init();
+
+  }
+  else{
+	  configFlag=1;
+	  MX_VCP_USB_DEVICE_Init();
+
+  }
   MX_USART2_UART_Init();
-  MX_VCP_USB_DEVICE_Init();
+
   /* USER CODE BEGIN 2 */
   HAL_UART_Receive_IT(&huart1,&rxBuff[0],1);
   HAL_TIM_Base_Start_IT(&htim15);

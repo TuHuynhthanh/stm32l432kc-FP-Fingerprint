@@ -48,8 +48,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USB_DEVICE__H__
-#define __USB_DEVICE__H__
+#ifndef __VCPUSB_DEVICE__H__
+#define __VCPUSB_DEVICE__H__
 
 #ifdef __cplusplus
  extern "C" {

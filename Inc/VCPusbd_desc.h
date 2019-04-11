@@ -48,8 +48,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USBD_DESC__H__
-#define __USBD_DESC__H__
+#ifndef __VCPUSBD_DESC__H__
+#define __VCPUSBD_DESC__H__
 
 #ifdef __cplusplus
  extern "C" {
