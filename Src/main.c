@@ -56,6 +56,10 @@
 #include "VCPusb_device.h"
 #include "usbd_cdc_if.h"
 #include "USB_HID_KEYS.h"
+#include "FPC1020/FPC1020_Communication.h"
+#include "FPC1020/FPC1020Application.h"
+#include "string.h"
+#include "stdlib.h"
 
 #define APP_RX_DATA_SIZE 1024
 /* USER CODE END Includes */
@@ -70,6 +74,10 @@ DMA_HandleTypeDef hdma_usart1_tx;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 uint8_t rxBuff[1024]={0};volatile int rxIndex=0;
+char st[100];
+int g_nMaxFpCount=500;
+UART_HandleTypeDef *debugTerminal=&huart2;
+bool volatile rx2Flag;
 uint32_t BuffLength;
 int8_t configFlag;//select HID =0or VCP=1
 uint32_t UserTxBufPtrIn = 0;/* Increment this pointer or roll it back to
@@ -102,6 +110,8 @@ extern uint8_t USBD_HID_SendReport(USBD_HandleTypeDef  *pdev, uint8_t *report, u
   *
   * @retval None
   */
+
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -164,9 +174,20 @@ int main(void)
 	  HAL_UART_Transmit(&huart2,st,strlen(st),1000);
 	  HAL_Delay(500);
 */
+	  uint8_t stSo[20];
+
 	  if(configFlag==0){
-		  sendHIDKey(8);
-		  HAL_Delay(1000);
+		  int kq;
+		  kq=fingerIdentify();
+		  if(kq>0){
+			  sprintf(stSo,"%04i",kq);
+
+			  sendHIDKey(stSo[0]);
+			  sendHIDKey(stSo[1]);
+			  sendHIDKey(stSo[2]);
+			  sendHIDKey(stSo[3]);
+			  sendHIDKey(10);
+		  }
 	  }
 
   }
