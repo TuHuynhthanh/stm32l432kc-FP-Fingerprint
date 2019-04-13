@@ -55,6 +55,7 @@
 
 #include "VCPusb_device.h"
 #include "usbd_cdc_if.h"
+#include "USB_HID_KEYS.h"
 
 #define APP_RX_DATA_SIZE 1024
 /* USER CODE END Includes */
@@ -87,7 +88,9 @@ static void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-
+void sendHIDKey(uint8_t Key);
+uint8_t convertNumbertoKeycode(uint8_t number);
+extern uint8_t USBD_HID_SendReport(USBD_HandleTypeDef  *pdev, uint8_t *report, uint16_t len);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -128,20 +131,24 @@ int main(void)
   MX_USART1_UART_Init();
   HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,1);
   if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)){
-	  configFlag=0; // =1, hid
+	  configFlag=0; // =0, hid
 	  MX_USB_DEVICE_Init();
 
   }
   else{
-	  configFlag=1;
+	  configFlag=1; //=1, VCP for config
 	  MX_VCP_USB_DEVICE_Init();
 
   }
   MX_USART2_UART_Init();
 
   /* USER CODE BEGIN 2 */
+
   HAL_UART_Receive_IT(&huart1,&rxBuff[0],1);
-  HAL_TIM_Base_Start_IT(&htim15);
+  if(configFlag==1){ //HID mode
+	  HAL_TIM_Base_Start_IT(&htim15);
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -157,6 +164,10 @@ int main(void)
 	  HAL_UART_Transmit(&huart2,st,strlen(st),1000);
 	  HAL_Delay(500);
 */
+	  if(configFlag==0){
+		  sendHIDKey(8);
+		  HAL_Delay(1000);
+	  }
 
   }
   /* USER CODE END 3 */
@@ -408,7 +419,63 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	  }
 }
 
+/*send one key on usb
+ * key value=10 to send Enter key.
+ * */
 
+void sendHIDKey(uint8_t Key)
+{
+	uint8_t buffkey[8]={0};
+	buffkey[0]=0;buffkey[1]=0;buffkey[2]=0;buffkey[3]=0;buffkey[4]=0;buffkey[5]=0;buffkey[6]=0;buffkey[7]=0;
+	if(Key==10) buffkey[3]=KEY_ENTER; //key==10: enter key
+	else buffkey[3]=convertNumbertoKeycode(Key);
+	USBD_HID_SendReport(&hUsbDeviceFS,buffkey,8);
+	HAL_Delay(50);
+	buffkey[0]=0;buffkey[1]=0;buffkey[2]=0;buffkey[3]=0;buffkey[4]=0;buffkey[5]=0;buffkey[6]=0;buffkey[7]=0;
+	USBD_HID_SendReport(&hUsbDeviceFS,buffkey,8);
+	HAL_Delay(50);
+}
+/*
+ * Convert number to Keycode
+ * */
+uint8_t convertNumbertoKeycode(uint8_t number)
+{
+	uint8_t keyCode=255;
+	switch(number)
+	{
+	case 0:
+	case 0x30:
+		keyCode=KEY_0;break;
+	case 1:
+	case 0x31:
+		keyCode=KEY_1;break;
+	case 2:
+	case 0x32:
+		keyCode=KEY_2;break;
+	case 3:
+	case 0x33:
+		keyCode=KEY_3;break;
+	case 4:
+	case 0x34:
+		keyCode=KEY_4;break;
+	case 5:
+	case 0x35:
+		keyCode=KEY_5;break;
+	case 6:
+	case 0x36:
+		keyCode=KEY_6;break;
+	case 7:
+	case 0x37:
+		keyCode=KEY_7;break;
+	case 8:
+	case 0x38:
+		keyCode=KEY_8;break;
+	case 9:
+	case 0x39:
+		keyCode=KEY_9;break;
+	}
+	return keyCode;
+}
 /* USER CODE END 4 */
 
 /**
