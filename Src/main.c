@@ -1,50 +1,6 @@
 
 /**
-  ******************************************************************************
-  * @file           : main.c
-  * @brief          : Main program body
-  ******************************************************************************
-  * This notice applies to any and all portions of this file
-  * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
-  * inserted by the user or by software development tools
-  * are owned by their respective copyright owners.
-  *
-  * Copyright (c) 2019 STMicroelectronics International N.V. 
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without 
-  * modification, are permitted, provided that the following conditions are met:
-  *
-  * 1. Redistribution of source code must retain the above copyright notice, 
-  *    this list of conditions and the following disclaimer.
-  * 2. Redistributions in binary form must reproduce the above copyright notice,
-  *    this list of conditions and the following disclaimer in the documentation
-  *    and/or other materials provided with the distribution.
-  * 3. Neither the name of STMicroelectronics nor the names of other 
-  *    contributors to this software may be used to endorse or promote products 
-  *    derived from this software without specific written permission.
-  * 4. This software, including modifications and/or derivative works of this 
-  *    software, must execute solely and exclusively on microcontroller or
-  *    microprocessor devices manufactured by or for STMicroelectronics.
-  * 5. Redistribution and use of this software other than as permitted under 
-  *    this license is void and will automatically terminate your rights under 
-  *    this license. 
-  *
-  * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
-  * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
-  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
-  * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
-  * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
-  * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-  * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
-  * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
-  * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
-  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  *
-  ******************************************************************************
+
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -99,6 +55,7 @@ static void MX_USART2_UART_Init(void);
 void sendHIDKey(uint8_t Key);
 uint8_t convertNumbertoKeycode(uint8_t number);
 extern uint8_t USBD_HID_SendReport(USBD_HandleTypeDef  *pdev, uint8_t *report, uint16_t len);
+void playBeep(uint16_t interval);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -136,26 +93,46 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  HAL_Delay(1000);
   MX_DMA_Init();
   MX_TIM15_Init();
   MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+
   HAL_GPIO_WritePin(GPIOB,GPIO_PIN_4,1);
   if(HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_4)){
 	  configFlag=0; // =0, hid
+	  playBeep(250);
+	  HAL_Delay(500);
 	  MX_USB_DEVICE_Init();
 
   }
   else{
+
 	  configFlag=1; //=1, VCP for config
 	  MX_VCP_USB_DEVICE_Init();
 
   }
-  MX_USART2_UART_Init();
+
 
   /* USER CODE BEGIN 2 */
 
-  HAL_UART_Receive_IT(&huart1,&rxBuff[0],1);
+
+
+
+  /*char stDebug[50];
+      int res;
+      while(1)
+      {
+
+    	  res=Run_TestConnection();
+    	  sprintf(stDebug,"res=%d\r\n",res);
+    	  DEBUG(stDebug);
+    	  HAL_Delay(500);
+      }*/
+
   if(configFlag==1){ //HID mode
+	  HAL_UART_Receive_IT(&huart1,&rxBuff[0],1);
 	  HAL_TIM_Base_Start_IT(&htim15);
   }
 
@@ -163,6 +140,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
 
@@ -180,6 +158,7 @@ int main(void)
 		  int kq;
 		  kq=fingerIdentify();
 		  if(kq>0){
+			  playBeep(50);
 			  sprintf(stSo,"%04i",kq);
 
 			  sendHIDKey(stSo[0]);
@@ -187,6 +166,12 @@ int main(void)
 			  sendHIDKey(stSo[2]);
 			  sendHIDKey(stSo[3]);
 			  sendHIDKey(10);
+		  }
+		  if(kq==-1)
+		  {
+			  playBeep(25);
+			  HAL_Delay(100);
+			  playBeep(25);
 		  }
 	  }
 
@@ -383,7 +368,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
   HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
 
   /*Configure GPIO pin : PB3 */
@@ -393,7 +378,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PB4 PB5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  GPIO_InitStruct.Pin = GPIO_PIN_1;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -402,6 +387,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void playBeep(uint16_t Interval){
+	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,0);
+	HAL_Delay(Interval);
+	HAL_GPIO_WritePin(GPIOB,GPIO_PIN_1,1);
+}
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	UserTxBufPtrIn+=1;
 

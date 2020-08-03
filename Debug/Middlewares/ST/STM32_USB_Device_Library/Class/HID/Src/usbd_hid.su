@@ -1,8 +1,8 @@
-usbd_hid.c:456:18:USBD_HID_GetCfgDesc	0	static
-usbd_hid.c:470:17:USBD_HID_DataIn	0	static
-usbd_hid.c:487:18:USBD_HID_GetDeviceQualifierDesc	0	static
-usbd_hid.c:319:17:USBD_HID_Setup	16	static
-usbd_hid.c:295:17:USBD_HID_DeInit	8	static
-usbd_hid.c:264:17:USBD_HID_Init	8	static
-usbd_hid.c:401:9:USBD_HID_SendReport	8	static
-usbd_hid.c:427:10:USBD_HID_GetPollingInterval	0	static
+usbd_hid.c:264:17:USBD_HID_Init	24	static
+usbd_hid.c:295:17:USBD_HID_DeInit	16	static
+usbd_hid.c:319:17:USBD_HID_Setup	32	static
+usbd_hid.c:401:9:USBD_HID_SendReport	32	static
+usbd_hid.c:427:10:USBD_HID_GetPollingInterval	24	static
+usbd_hid.c:456:18:USBD_HID_GetCfgDesc	16	static
+usbd_hid.c:470:17:USBD_HID_DataIn	16	static
+usbd_hid.c:487:18:USBD_HID_GetDeviceQualifierDesc	16	static

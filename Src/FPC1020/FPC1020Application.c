@@ -245,52 +245,46 @@ l_exit:
  * */
 
 int fingerIdentify(){
-	  int w_nRet, w_nTmplNo, w_nFpStatus, w_nLearned;
-		  	  w_nRet=Run_TestConnection();
-		  	  if(w_nRet==ERR_CONNECTION){
-		  		DEBUG("Connection error\n");
-		  	  }
-		  	  w_nRet=Run_GetStatus(w_nTmplNo, &w_nFpStatus);
-		  	 DEBUG("Input your finger\n");
-		  	 rx2Flag=false;
-		  	  while(1){
-//		  		  if(rx2Flag) {
-//		  			  break; //exit if get a command on terminal
-//		  		  }
+	int w_nRet, w_nTmplNo, w_nFpStatus, w_nLearned;
+	w_nRet=Run_TestConnection();
+	if(w_nRet==ERR_CONNECTION){
+		DEBUG("Connection error\n");
+	}
+	w_nRet=Run_GetStatus(w_nTmplNo, &w_nFpStatus);
+	DEBUG("Input your finger\n");
+	rx2Flag=false;
+	while(1){
+		while(1)
+		{
+			w_nRet=Run_GetImage();
+			if(w_nRet == ERR_SUCCESS)
+				break;
+		}
+
+		w_nRet = Run_Generate(0);
 
 
-
-		  		  while(1)
-		  		  {
-		  			  w_nRet=Run_GetImage();
-		  			  if(w_nRet == ERR_SUCCESS)
-		  				  break;
-		  		  }
-
-		  		  w_nRet = Run_Generate(0);
-
-
-		  		  w_nRet = Run_Search(0, 1, g_nMaxFpCount, &w_nTmplNo, &w_nLearned);
-		  		  if (w_nRet == ERR_SUCCESS)
-		  		  {
-		  			  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);
-		  			  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);
-		  			  HAL_Delay(50);
-		  			  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);
-		  			  sprintf(st,"Template number=%d \n",w_nTmplNo);
-		  			  HAL_UART_Transmit(debugTerminal,(uint8_t*)st,strlen(st),1000);
-		  			return w_nTmplNo;
-		  		  }
-		  		  else
-		  		  {
-		  			  DEBUG("Can't identify this finger\n");
-		  			  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);
-		  			  HAL_Delay(50);
-		  			  HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);
-		  			  return -1;
-		  		  }
-		  		  HAL_Delay(50);
-		  	  }
+		w_nRet = Run_Search(0, 1, g_nMaxFpCount, &w_nTmplNo, &w_nLearned);
+		if (w_nRet == ERR_SUCCESS)
+		{
+			HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);
+			HAL_Delay(50);
+			HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);
+			sprintf(st,"Template number=%d \n",w_nTmplNo);
+			HAL_UART_Transmit(debugTerminal,(uint8_t*)st,strlen(st),1000);
+			return w_nTmplNo;
+		}
+		else
+		{
+			DEBUG("Can't identify this finger\n");
+			HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_SET);
+			HAL_Delay(50);
+			HAL_GPIO_WritePin(GPIOB,GPIO_PIN_3,GPIO_PIN_RESET);
+			return -1;
+		}
+		HAL_Delay(50);
+	}
 
 }
 /*get next empty id*/

@@ -106,7 +106,7 @@ void MX_USB_DEVICE_Init(void)
   /* upon reception of PCD_BCD_DISCOVERY_COMPLETED message. */
   /* If no, the USB device is started now. */
   if (USBD_LL_BatteryCharging(&hUsbDeviceFS) != USBD_OK) {
-  USBD_Start(&hUsbDeviceFS);
+	  USBD_Start(&hUsbDeviceFS);
   }
   /* USER CODE BEGIN USB_DEVICE_Init_PostTreatment */
   

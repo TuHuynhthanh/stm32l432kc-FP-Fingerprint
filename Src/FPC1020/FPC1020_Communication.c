@@ -19,10 +19,10 @@ int	Run_TestConnection(void)
 	InitCmdPacket(CMD_TEST_CONNECTION, m_bySrcDeviceID, m_byDstDeviceID, NULL, 0);
 	w_bRet=SendCommand(CMD_TEST_CONNECTION, m_bySrcDeviceID, m_byDstDeviceID);
 
-		if(!w_bRet)
-			return ERR_CONNECTION;
+	if(!w_bRet)
+		return ERR_CONNECTION;
 
-		return RESPONSE_RET;
+	return RESPONSE_RET;
 }
 /************************************************************************/
 /************************************************************************/
